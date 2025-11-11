@@ -34,7 +34,7 @@ def load_synth(num_train=60_000, num_val=10_000):
     return (x[:num_train, :], y[:num_train]), (x[num_train:, :], y[num_train:]), 2
 
 
-def load_mnist(final=False, flatten=True):
+def load_mnist(final=False, flatten=True, shuffle_seed=0):
     """
     Load the MNIST data
 
@@ -53,6 +53,15 @@ def load_mnist(final=False, flatten=True):
     if flatten:
         xtrain = xtrain.reshape(xtl, -1)
         xtest  = xtest.reshape(xsl, -1)
+
+    if shuffle_seed >= 0:
+        rng = np.random.default_rng(shuffle_seed)
+
+        p = rng.permutation(xtrain.shape[0])
+        xtrain, ytrain = xtrain[p], ytrain[p]
+
+        p = rng.permutation(xtest.shape[0])
+        xtest, ytest = xtest[p], ytest[p]
 
     if not final: # return the flattened images
         return (xtrain[:-5000], ytrain[:-5000]), (xtrain[-5000:], ytrain[-5000:]), 10
